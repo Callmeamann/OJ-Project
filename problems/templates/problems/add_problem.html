@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Problem</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .tab-button {
+        position: relative;
+        padding-right: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .tab-button .close-btn {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.25rem;
+        cursor: pointer;
+        display: none;
+      }
+      .tab-button:hover .close-btn {
+        display: inline;
+      }
+      .sides {
+        background-color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+      .sides > div {
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      #tab_container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+    </style>
+    <script>
+      let testCaseCount = 3;
+      let currentTestCase = 1;
+
+      function addTestCase() {
+        testCaseCount++;
+        const tabContainer = document.getElementById("tab_container");
+        const newTab = document.createElement("button");
+        newTab.classList.add(
+          "tab-button",
+          "text-white",
+          "bg-gray-600",
+          "hover:bg-gray-800",
+          "py-1",
+          "px-4",
+          "rounded",
+          "mr-2",
+          "focus:outline-none"
+        );
+        newTab.setAttribute("type", "button");
+        newTab.setAttribute("onclick", `showTestCase(${testCaseCount})`);
+        newTab.innerHTML = `Case ${testCaseCount} <span class="close-btn" onclick="removeTestCase(event, ${testCaseCount})">&times;</span>`;
+        tabContainer.insertBefore(newTab, tabContainer.lastElementChild);
+
+        const testCaseContainer = document.getElementById(
+          "test_case_container"
+        );
+        const newTestCase = document.createElement("div");
+        newTestCase.classList.add("test_case");
+        newTestCase.setAttribute("id", `test_case_${testCaseCount}`);
+        newTestCase.innerHTML = `
+                <div>
+                    <label class="block text-gray-700">Input Data:</label>
+                    <textarea name="test_cases_${testCaseCount}" class="w-full p-2 border border-gray-300 rounded"></textarea>
+                </div>
+                <div>
+                    <label class="block text-gray-700">Expected Output:</label>
+                    <div id="expected_outputs_container_${testCaseCount}">
+                        <textarea name="expected_outputs_${testCaseCount}[]" class="w-full p-2 border border-gray-300 rounded mb-2"></textarea>
+                    </div>
+                    <button type="button" class="text-white bg-green-600 hover:bg-green-800 py-1 px-4 rounded focus:outline-none" onclick="addExpectedOutput(${testCaseCount})">+</button>
+                </div>
+            `;
+        testCaseContainer.appendChild(newTestCase);
+        showTestCase(testCaseCount);
+        document.getElementById("test_case_count").value = testCaseCount;
+      }
+
+      function addExpectedOutput(caseNumber) {
+        const outputContainer = document.getElementById(
+          `expected_outputs_container_${caseNumber}`
+        );
+        const newOutput = document.createElement("textarea");
+        newOutput.classList.add(
+          "w-full",
+          "p-2",
+          "border",
+          "border-gray-300",
+          "rounded",
+          "mb-2"
+        );
+        newOutput.setAttribute("name", `expected_outputs_${caseNumber}[]`);
+        outputContainer.appendChild(newOutput);
+      }
+
+      function showTestCase(caseNumber) {
+        currentTestCase = caseNumber;
+        const testCases = document.querySelectorAll(".test_case");
+        testCases.forEach((tc) => (tc.style.display = "none"));
+        document.getElementById(`test_case_${caseNumber}`).style.display =
+          "block";
+
+        const tabs = document.querySelectorAll(".tab-button");
+        tabs.forEach((tab) => tab.classList.remove("bg-gray-800"));
+        document
+          .querySelector(`.tab-button[onclick="showTestCase(${caseNumber})"]`)
+          .classList.add("bg-gray-800");
+      }
+
+      function removeTestCase(event, caseNumber) {
+        event.stopPropagation();
+        document.getElementById(`test_case_${caseNumber}`).remove();
+        document
+          .querySelector(`.tab-button[onclick="showTestCase(${caseNumber})"]`)
+          .remove();
+        if (currentTestCase === caseNumber && testCaseCount > 1) {
+          showTestCase(caseNumber - 1);
+        }
+        testCaseCount--;
+        document.getElementById("test_case_count").value = testCaseCount;
+      }
+
+      function validateForm(event) {
+        if (testCaseCount < 6) {
+          event.preventDefault();
+          alert("Please add at least 6 test cases.");
+          return false;
+        }
+        return true;
+      }
+
+      document.addEventListener("DOMContentLoaded", (event) => {
+        showTestCase(1);
+      });
+    </script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
+              >Code Arena</a
+            >
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul
+              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
+            >
+              <li class="nav-item">
+                <a
+                  class="text-gray-800 hover:text-gray-600 mx-2"
+                  href="{% url 'home' %}"
+                  >Home</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'profile' %}"
+                  >Profile</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'problems_list' %}"
+                  >Problems</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'review_problems' %}"
+                  >Review Problems</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'logout' %}"
+                  >Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Add Problem Section -->
+    <section class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h1 class="text-3xl font-bold mb-4">Add New Problem</h1>
+      <form
+        method="POST"
+        action="{% url 'add_problem' %}"
+        onsubmit="return validateForm(event)"
+      >
+        {% csrf_token %}
+        <input
+          type="hidden"
+          id="test_case_count"
+          name="test_case_count"
+          value="3"
+        />
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="sides">
+            <div>
+              <h2 class="text-2xl font-bold mb-2">Problem Details</h2>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-gray-700">Title:</label>
+                  <input
+                    type="text"
+                    name="title"
+                    class="w-full p-2 border border-gray-300 rounded"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block text-gray-700">Description:</label>
+                  <textarea
+                    name="description"
+                    class="w-full h-32 p-2 border border-gray-300 rounded"
+                    required
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-gray-700">Input Description:</label>
+                  <textarea
+                    name="input_description"
+                    class="w-full h-20 p-2 border border-gray-300 rounded"
+                    required
+                  ></textarea>
+                </div>
+                <div>
+                  <label class="block text-gray-700">Output Description:</label>
+                  <textarea
+                    name="output_description"
+                    class="w-full h-20 p-2 border border-gray-300 rounded"
+                    required
+                  ></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-gray-700">Example Input:</label>
+                    <textarea
+                      name="example_input"
+                      class="w-full p-2 border border-gray-300 rounded"
+                      required
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700">Example Output:</label>
+                    <textarea
+                      name="example_output"
+                      class="w-full p-2 border border-gray-300 rounded"
+                      required
+                    ></textarea>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-gray-700">Difficulty:</label>
+                  <select
+                    name="difficulty"
+                    class="w-full p-2 border border-gray-300 rounded"
+                  >
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sides">
+            <div>
+              <h2 class="text-2xl font-bold mb-2">Test Cases</h2>
+              <div id="tab_container" class="flex mb-4 flex-wrap">
+                <button
+                  type="button"
+                  class="tab-button text-white bg-gray-600 hover:bg-gray-800 py-1 px-4 rounded mr-2 focus:outline-none"
+                  onclick="showTestCase(1)"
+                >
+                  Case 1
+                  <span class="close-btn" onclick="removeTestCase(event, 1)"
+                    >&times;</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="tab-button text-white bg-gray-600 hover:bg-gray-800 py-1 px-4 rounded mr-2 focus:outline-none"
+                  onclick="showTestCase(2)"
+                >
+                  Case 2
+                  <span class="close-btn" onclick="removeTestCase(event, 2)"
+                    >&times;</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="tab-button text-white bg-gray-600 hover:bg-gray-800 py-1 px-4 rounded mr-2 focus:outline-none"
+                  onclick="showTestCase(3)"
+                >
+                  Case 3
+                  <span class="close-btn" onclick="removeTestCase(event, 3)"
+                    >&times;</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="tab-button text-white bg-green-600 hover:bg-green-800 py-1 px-2 rounded focus:outline-none font-bold content-between text-xl"
+                  onclick="addTestCase()"
+                >
+                  <span style="margin-left: 9px">+</span>
+                </button>
+              </div>
+              <div id="test_case_container">
+                <div class="test_case" id="test_case_1">
+                  <div>
+                    <label class="block text-gray-700">Input Data:</label>
+                    <textarea
+                      name="test_cases_1"
+                      class="w-full p-2 border border-gray-300 rounded"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700">Expected Output:</label>
+                    <div id="expected_outputs_container_1">
+                      <textarea
+                        name="expected_outputs_1[]"
+                        class="w-full p-2 border border-gray-300 rounded mb-2"
+                      ></textarea>
+                    </div>
+                    <button
+                      type="button"
+                      class="text-white bg-green-600 hover:bg-green-800 py-1 px-4 rounded focus:outline-none"
+                      onclick="addExpectedOutput(1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="test_case" id="test_case_2" style="display: none">
+                  <div>
+                    <label class="block text-gray-700">Input Data:</label>
+                    <textarea
+                      name="test_cases_2"
+                      class="w-full p-2 border border-gray-300 rounded"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700">Expected Output:</label>
+                    <div id="expected_outputs_container_2">
+                      <textarea
+                        name="expected_outputs_2[]"
+                        class="w-full p-2 border border-gray-300 rounded mb-2"
+                      ></textarea>
+                    </div>
+                    <button
+                      type="button"
+                      class="text-white bg-green-600 hover:bg-green-800 py-1 px-4 rounded focus:outline-none"
+                      onclick="addExpectedOutput(2)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="test_case" id="test_case_3" style="display: none">
+                  <div>
+                    <label class="block text-gray-700">Input Data:</label>
+                    <textarea
+                      name="test_cases_3"
+                      class="w-full p-2 border border-gray-300 rounded"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700">Expected Output:</label>
+                    <div id="expected_outputs_container_3">
+                      <textarea
+                        name="expected_outputs_3[]"
+                        class="w-full p-2 border border-gray-300 rounded mb-2"
+                      ></textarea>
+                    </div>
+                    <button
+                      type="button"
+                      class="text-white bg-green-600 hover:bg-green-800 py-1 px-4 rounded focus:outline-none"
+                      onclick="addExpectedOutput(3)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end mt-4">
+          <button
+            type="submit"
+            class="text-white bg-purple-600 hover:bg-purple-800 py-2 px-6 rounded focus:outline-none"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2023 Code Arena. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
+  </body>
+</html>

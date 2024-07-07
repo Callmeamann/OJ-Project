@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Approve Problem</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      function confirmAction(action) {
+        if (action === "approve") {
+          return confirm("Are you sure you want to approve this problem?");
+        } else if (action === "discard") {
+          return confirm("Are you sure you want to discard this problem?");
+        }
+        return false;
+      }
+    </script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
+              >Code Arena</a
+            >
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul
+              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
+            >
+              <li class="nav-item">
+                <a
+                  class="text-gray-800 hover:text-gray-600 mx-2"
+                  href="{% url 'home' %}"
+                  >Home</a
+                >
+              </li>
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'profile' %}"
+                  >Profile</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'problems_list' %}"
+                  >Problems</a
+                >
+              </li>
+              {% if user.is_staff %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'review_problems' %}"
+                  >Review Problems</a
+                >
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'logout' %}"
+                  >Logout</a
+                >
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'register' %}"
+                  >Register</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'login' %}"
+                  >Login</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Approve Problem Section -->
+    <section class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h1 class="text-3xl font-bold mb-4">
+        Approve Problem: {{ temp_problem.title }}
+      </h1>
+      <p class="mb-2">
+        <strong>Description:</strong> {{ temp_problem.description }}
+      </p>
+      <p class="mb-2">
+        <strong>Input Description:</strong> {{ temp_problem.input_description }}
+      </p>
+      <p class="mb-2">
+        <strong>Output Description:</strong> {{ temp_problem.output_description
+        }}
+      </p>
+      <p class="mb-2">
+        <strong>Example Input:</strong> {{ temp_problem.example_input }}
+      </p>
+      <p class="mb-2">
+        <strong>Example Output:</strong> {{ temp_problem.example_output }}
+      </p>
+      <p class="mb-2">
+        <strong>Difficulty:</strong> {{ temp_problem.difficulty }}
+      </p>
+
+      <h3 class="text-xl font-bold mb-2">Test Cases</h3>
+      {% for test_case in test_cases %}
+      <div class="p-4 bg-gray-300 shadow-md rounded-lg my-2">
+        <p><strong>Input Data:</strong> {{ test_case.input_data }}</p>
+        <h4 class="text-lg font-bold mb-2">Expected Outputs</h4>
+        {% for expected_output in test_case.temporary_expected_outputs.all %}
+        <p class="p-2 bg-gray-400 shadow-md rounded-lg my-1">
+          <strong>Output:</strong> {{ expected_output.output }}
+        </p>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="flex justify-end mt-4">
+        <form
+          method="POST"
+          action="{% url 'approve_problem' temp_problem.pk %}"
+          onsubmit="return confirmAction('approve')"
+        >
+          {% csrf_token %}
+          <button
+            type="submit"
+            class="text-white bg-purple-600 hover:bg-purple-800 py-2 px-4 rounded mr-2"
+          >
+            Approve
+          </button>
+        </form>
+        <form
+          method="POST"
+          action="{% url 'discard_problem' temp_problem.pk %}"
+          onsubmit="return confirmAction('discard')"
+        >
+          {% csrf_token %}
+          <button
+            type="submit"
+            class="text-white bg-red-600 hover:bg-red-800 py-2 px-4 rounded"
+          >
+            Discard
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2023 Code Arena. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

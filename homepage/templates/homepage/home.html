@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-white text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
+          </div>
+          <div class="flex lg:hidden">
+            <button
+              type="button"
+              class="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
+              aria-label="toggle menu"
+            >
+              <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
+                <path fill-rule="evenodd" d="M4 5h16M4 11h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
+              <li class="nav-item">
+                <a class="text-gray-800 hover:text-gray-600 mx-2" href="{% url 'home' %}">Home</a>
+              </li>
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'profile' %}">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'problems_list' %}">Problems</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'logout' %}">Logout</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'register' %}">Register</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'login' %}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+
+    <!-- Hero Section -->
+    <section class="bg-gray-500 text-white py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl font-bold">Welcome to Arena for Coders</h1>
+        <p class="text-lg mt-4">
+          An online platform to test and improve your coding skills.
+        </p>
+        {% if not user.is_authenticated %}
+        <div class="mt-8">
+          <a
+            href="{% url 'register' %}"
+            class="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
+            >Register Now</a
+          >
+          <a
+            href="{% url 'login' %}"
+            class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
+            >Login</a
+          >
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+      <div class="flex flex-wrap -mx-4">
+        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+          <h2 class="text-2xl font-semibold mb-4">Practice Problems</h2>
+          <p class="mb-4">
+            Explore a wide range of coding problems to practice and improve your
+            skills.
+          </p>
+          <a
+            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+            href={% url 'problems_list' %}
+            role="button"
+            >View details &raquo;</a
+          >
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+          <h2 class="text-2xl font-semibold mb-4">Contests</h2>
+          <p class="mb-4">
+            Participate in coding contests to test your skills against others.
+          </p>
+          <a
+            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+            href="#"
+            role="button"
+            >View details &raquo;</a
+          >
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+          <h2 class="text-2xl font-semibold mb-4">Community</h2>
+          <p class="mb-4">
+            Join our community of coders to discuss and share knowledge.
+          </p>
+          <a
+            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+            href="#"
+            role="button"
+            >View details &raquo;</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p>&copy; 2023 MyOJ. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
+  </body>
+</html>

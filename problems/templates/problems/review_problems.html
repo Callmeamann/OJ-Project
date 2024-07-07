@@ -1,0 +1,114 @@
+<!-- review_problems.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Problems</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
+              >Code Arena</a
+            >
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul
+              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
+            >
+              <li class="nav-item">
+                <a
+                  class="text-gray-800 hover:text-gray-600 mx-2"
+                  href="{% url 'home' %}"
+                  >Home</a
+                >
+              </li>
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'profile' %}"
+                  >Profile</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'problems_list' %}"
+                  >Problems</a
+                >
+              </li>
+              {% if user.is_staff %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'review_problems' %}"
+                  >Review Problems</a
+                >
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'logout' %}"
+                  >Logout</a
+                >
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'register' %}"
+                  >Register</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2"
+                  href="{% url 'login' %}"
+                  >Login</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Review Problems Section -->
+    <section class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h1 class="text-3xl font-bold mb-4">Review Problems</h1>
+      {% for temp_problem in temp_problems %}
+      <div class="p-4 bg-gray-200 shadow-md rounded-lg my-4">
+        <h2 class="text-2xl font-bold mb-2">{{ temp_problem.title }}</h2>
+        <p class="mb-2">{{ temp_problem.description }}</p>
+        <form method="get" action="{% url 'approve_problem' temp_problem.pk %}">
+          <button
+            type="submit"
+            class="text-white bg-purple-600 hover:bg-purple-800 py-2 px-4 rounded mt-2"
+          >
+            Review and Approve
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2023 Code Arena. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>
