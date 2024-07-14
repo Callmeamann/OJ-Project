@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contests</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet" />
+
+    <style>
+        .nav-link {
+          border-radius: 4px;
+          transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+          color: #6b46c1; /* Purple color on hover */
+        }
+  
+        .nav-item a {
+          position: relative;
+          display: inline-block;
+          padding-bottom: 2px;
+        }
+  
+        .nav-item a::before {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background-color: #6b46c1; /* Purple color */
+          visibility: hidden;
+          transition: all 0.3s ease-in-out;
+        }
+  
+        .nav-item a:hover::before {
+          visibility: visible;
+          width: 100%;
+        }
+    </style>
+
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
+        <div class="container mx-auto px-6 py-3">
+          <div class="flex justify-between items-center">
+            <div>
+              <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
+            </div>
+            <div class="hidden lg:flex lg:items-center">
+              <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
+                <li class="nav-item">
+                  <a class="text-gray-800 hover:text-gray-600 mx-2 nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'problems_list' %}">Problems</a>
+                </li>
+                {% if user.is_authenticated %}
+                {% if user.profile.role.name == 'admin' or user.profile.role.name == 'moderator' %}
+                <li class="nav-item">
+                    <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'host_contest' %}">Host Contests</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                  <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'profile' %}">Profile</a>
+                </li>
+  
+                {% else %}
+                <li class="nav-item">
+                  <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                <li class="nav-item">
+                  <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gray-500 text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold">Contests</h1>
+            <p class="text-lg mt-4">
+                Participate in coding contests to test your skills against others.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contest List Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-6">Available Contests</h2>
+            <div>
+                {% if contests %}
+                    <ul class="divide-y divide-gray-200">
+                        {% for contest in contests %}
+                            <li class="py-4">
+                                <h3 class="text-xl font-bold">{{ contest.title }}</h3>
+                                <p class="text-gray-600">{{ contest.description }}</p>
+                                <p class="text-gray-500">Start: {{ contest.start_time }}</p>
+                                <p class="text-gray-500">End: {{ contest.end_time }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-gray-600">No contests available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 MyOJ. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
+</body>
+</html>

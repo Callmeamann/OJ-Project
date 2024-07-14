@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Host Contest</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .nav-link {
+        border-radius: 4px;
+        transition: color 0.3s ease;
+      }
+      .nav-link:hover {
+        color: #6b46c1; /* Purple color on hover */
+      }
+
+      .nav-item a {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 2px;
+      }
+
+      .nav-item a::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #6b46c1; /* Purple color */
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .nav-item a:hover::before {
+        visibility: visible;
+        width: 100%;
+      }
+  </style>
+
+
+
+  </head>
+  <body class="bg-white text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
+              <li class="nav-item">
+                <a class="text-gray-800 hover:text-gray-600 mx-2 nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'problems_list' %}">Problems</a>
+              </li>
+              {% if user.is_authenticated %}
+              {% if user.profile.role.name == 'admin' or user.profile.role.name == 'moderator' %}
+              <li class="nav-item">
+                  <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'contests_list' %}">Contests</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'profile' %}">Profile</a>
+              </li>
+
+              {% else %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'register' %}">Register</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gray-500 text-white py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl font-bold">Host a Contest</h1>
+        <p class="text-lg mt-4">
+          Create and manage coding contests to challenge and engage the
+          community.
+        </p>
+      </div>
+    </section>
+
+    <!-- Host Contest Form -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-2xl font-semibold mb-6">Create a New Contest</h2>
+        <form method="post" action="{% url 'host_contest' %}">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="title" class="block text-gray-700 font-bold mb-2"
+              >Contest Title:</label
+            >
+            <input
+              type="text"
+              id="title"
+              name="title"
+              class="block w-full bg-gray-100 border border-gray-300 rounded-lg py-2 px-4"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-bold mb-2"
+              >Description:</label
+            >
+            <textarea
+              id="description"
+              name="description"
+              class="block w-full bg-gray-100 border border-gray-300 rounded-lg py-2 px-4"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+          <div class="mb-4">
+            <label for="start_time" class="block text-gray-700 font-bold mb-2"
+              >Start Time:</label
+            >
+            <input
+              type="datetime-local"
+              id="start_time"
+              name="start_time"
+              class="block w-full bg-gray-100 border border-gray-300 rounded-lg py-2 px-4"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label for="end_time" class="block text-gray-700 font-bold mb-2"
+              >End Time:</label
+            >
+            <input
+              type="datetime-local"
+              id="end_time"
+              name="end_time"
+              class="block w-full bg-gray-100 border border-gray-300 rounded-lg py-2 px-4"
+              required
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              type="submit"
+              class="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+              Create Contest
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p>&copy; 2024 MyOJ. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ community.name }} Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .nav-link {
+        border-radius: 4px;
+        transition: color 0.3s ease;
+      }
+      .nav-link:hover {
+        color: #6b46c1; /* Purple color on hover */
+      }
+
+      .nav-item a {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 2px;
+      }
+
+      .nav-item a::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #6b46c1; /* Purple color */
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .nav-item a:hover::before {
+        visibility: visible;
+        width: 100%;
+      }
+
+      .community{
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 4 1rem;
+        margin-top: 2rem;
+      }
+      .section-header {
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .section-header h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #4a5568; /* Gray-700 */
+      }
+
+      .section-content {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: #f7fafc; /* Gray-100 */
+      }
+
+      .post-list {
+        margin-top: 2rem;
+      }
+
+      .post-list ul {
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+
+      .post-list li {
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .post-list li:last-child {
+        border-bottom: none;
+      }
+
+      .post-list a {
+        color: #6b46c1; /* Purple color */
+        font-weight: bold;
+        transition: color 0.3s ease;
+      }
+
+      .post-list a:hover {
+        color: #553c9a; /* Darker purple */
+      }
+
+      .btn {
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-primary {
+        background-color: #6b46c1; /* Purple color */
+      }
+
+      .btn-primary:hover {
+        background-color: #553c9a; /* Darker purple */
+      }
+
+      .btn-secondary {
+        background-color: #4a5568; /* Gray color */
+      }
+
+      .btn-secondary:hover {
+        background-color: #2d3748; /* Darker gray */
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
+              <li class="nav-item">
+                <a class="text-gray-800 hover:text-gray-600 mx-2 nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'problems_list' %}">Problems</a>
+              </li>
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'profile' %}">Profile</a>
+              </li>
+
+              {% else %}
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'register' %}">Register</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Community Details Section -->
+    <section class="community container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <div class="section-header">
+        <h1>{{ community.name }}</h1>
+      </div>
+      <div class="section-content">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <p class="text-gray-600">{{ community.description }}</p>
+          </div>
+          <div>
+            <button
+              id="add-post-btn"
+              class="btn btn-primary text-white py-2 px-4 rounded"
+              onclick="togglePostForm()"
+            >
+              Add New Post
+            </button>
+            {% if user.is_authenticated %}
+            <form id="follow-form" class="inline-block">
+              {% csrf_token %}
+              <button
+                type="button"
+                id="follow-btn"
+                class="btn btn-secondary text-white py-2 px-4 rounded ml-2"
+                style="background-color: {% if is_following %} grey {% else %} green {% endif %}"
+              >
+                {% if is_following %} Unfollow {% else %} Follow {% endif %}
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Add Post Form -->
+        <div
+          id="post-form-container"
+          class="hidden mt-6 bg-gray-200 p-4 rounded-lg"
+        >
+          <h2 class="text-2xl font-bold mb-4">Add New Post</h2>
+          <form
+            id="post-form"
+            method="post"
+            action="{% url 'create_post' community.pk %}"
+          >
+            {% csrf_token %}
+            <div class="mb-4">
+              <label class="block text-gray-700 font-bold mb-2" for="title"
+                >Title</label
+              >
+              <input
+                type="text"
+                id="title"
+                name="title"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-bold mb-2" for="content"
+                >Content</label
+              >
+              <textarea
+                id="content"
+                name="content"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              ></textarea>
+            </div>
+            <div class="flex items-center justify-between">
+              <button
+                type="submit"
+                class="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-800"
+              >
+                Add Post
+              </button>
+              <button
+                type="button"
+                class="inline-block align-baseline font-bold text-sm text-purple-600 hover:text-purple-800"
+                onclick="togglePostForm()"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Posts List -->
+        <div class="post-list">
+          {% if posts %}
+          <ul class="divide-y divide-gray-200">
+            {% for post in posts %}
+            <li class="py-4">
+              <div class="flex items-center">
+                <span class="text-gray-600 font-bold mr-2"
+                  >{{ post.created_by.username }} :</span
+                >
+                <a
+                  href="{% url 'post_detail' post.pk %}"
+                  class="text-xl font-semibold text-purple-600 hover:text-purple-800"
+                  >{{ post.title }}</a
+                >
+              </div>
+              <p class="text-gray-600 mt-1">
+                {{ post.content|slice:":300" }}...
+              </p>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-gray-600 mt-4">No posts found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2024 Code Arena. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      function togglePostForm() {
+        $("#post-form-container").toggleClass("hidden");
+      }
+
+      $(document).ready(function () {
+        $("#follow-btn").click(function () {
+          var btn = $(this);
+          var csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+          var isFollowing = btn.text().trim() === "Unfollow";
+          var url = isFollowing
+            ? "{% url 'unfollow_community' community.pk %}"
+            : "{% url 'follow_community' community.pk %}";
+
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+              csrfmiddlewaretoken: csrfToken,
+            },
+            success: function (response) {
+              if (btn.text().trim() === "Follow") {
+                btn.text("Unfollow");
+                btn.css("background-color", "grey");
+              } else {
+                btn.text("Follow");
+                btn.css("background-color", "green");
+              }
+            },
+            error: function (xhr, errmsg, err) {
+              console.log(errmsg);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

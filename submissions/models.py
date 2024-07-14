@@ -4,6 +4,7 @@ from problems.models import Language,Problem
 
 class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     code = models.TextField()
     input_data = models.TextField(blank=True, null=True)

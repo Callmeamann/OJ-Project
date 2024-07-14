@@ -47,7 +47,7 @@ def run_code(request, pk):
             input_data=input_data,
             output_data=result
         )
-        print(result) # debug print
+        # print(result) # debug print
         return JsonResponse({'result': result, 'submission_id': submission.id})
 
     else:
@@ -100,9 +100,10 @@ def submit_code(request, pk):
             results.append(result)
             
             if status == 'Fail':
-                # Assuming you want to save the code and return a success message
+                # Save the code and return a success message
                 submission = Submission.objects.create(
                     user=user,
+                    problem=problem,
                     language=language,
                     code=code,
                     status=status,
@@ -115,9 +116,10 @@ def submit_code(request, pk):
                     'actual_output': actual_output
                 })
         
-        # Assuming you want to save the code and return a success message
+        # Save the code and return a success message
         submission = Submission.objects.create(
             user=user,
+            problem=problem,
             language=language,
             code=code,
             status='Success',

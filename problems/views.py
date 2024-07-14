@@ -7,11 +7,13 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 
 # Models
+from submissions.models import Submission
 from .models import Problem, Language, TemporaryProblem ,TemporaryTestCase, TemporaryExpectedOutput
 from submissions.models import TestCase, ExpectedOutput
+from contests.decorators import role_required
 
 # CSRF
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 
 # Form
 from .forms import CodeSubmissionForm
@@ -26,22 +28,37 @@ def problems_list(request):
         problems = Problem.objects.filter(Q(id__icontains=query) | Q(title__icontains=query))
     else:
         problems = Problem.objects.all()
-    return render(request, 'problems/problems_list.html', {'problems': problems, 'query': query})
 
-
+    solved_problems = []
+    if request.user.is_authenticated:
+        solved_problems = Submission.objects.filter(user=request.user, status='Success').values_list('problem_id', flat=True)
+        
+    return render(request, 'problems/problems_list.html', {
+        'problems': problems,
+        'query': query,
+        'solved_problems': solved_problems
+    })
+    
+    
 def problem_detail(request, pk):
     problem = get_object_or_404(Problem, pk=pk)
+    solved = False
+
+    if request.user.is_authenticated:
+        solved = Submission.objects.filter(problem=problem, user=request.user, status='Success').exists()
+
+    # print(solved)
     if request.method == 'POST':
-        form = CodeSubmissionForm(request.POST)     
+        form = CodeSubmissionForm(request.POST)
     else:
         form = CodeSubmissionForm()
-    return render(request, 'problems/problem_detail.html', {'problem': problem, 'form': form})
 
+    return render(request, 'problems/problem_detail.html', {'problem': problem, 'form': form, 'solved': solved})
 
 #Problem Submission
 
 @login_required
-@csrf_protect
+# @csrf_protect
 def run_code_transfer(request, pk):
     if request.method == 'POST':
         # print("CSRF token from request:", request.META.get('HTTP_X_CSRFTOKEN'))  # Debug statement
@@ -116,7 +133,7 @@ def submit_code_transfer(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@role_required(['moderator', 'admin'])
 def review_problems(request):
     temp_problems = TemporaryProblem.objects.all()
     return render(request, 'problems/review_problems.html', {'temp_problems': temp_problems})
@@ -124,7 +141,6 @@ def review_problems(request):
 # views.py
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
 def add_problem_view(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -172,7 +188,7 @@ def add_problem_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@role_required(['moderator', 'admin'])
 def approve_problem_view(request, pk):
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission to approve problems.')
@@ -218,6 +234,7 @@ def approve_problem_view(request, pk):
     })
 
 @login_required
+@role_required(['moderator', 'admin'])
 def discard_problem_view(request, pk):
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission to discard problems.')

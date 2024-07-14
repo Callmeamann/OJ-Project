@@ -8,6 +8,66 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
       rel="stylesheet"
     />
+
+    <style>
+      .nav-link {
+        border-radius: 4px;
+        transition: color 0.3s ease;
+      }
+      .nav-link:hover {
+        color: #6b46c1; /* Purple color on hover */
+      }
+
+      .nav-item a {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 2px;
+      }
+
+      .nav-item a::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #6b46c1; /* Purple color */
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .nav-item a:hover::before {
+        visibility: visible;
+        width: 100%;
+      }
+
+      .section-border {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .test-case-container {
+        padding: 10px;
+        background-color: #f3f4f6; /* Light gray */
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+
+      .expected-output-container {
+        padding: 10px;
+        background-color: #e5e7eb; /* Slightly darker gray */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+
+      .footer {
+        border-top: 1px solid #e2e8f0; /* Light gray */
+      }
+    </style>
     <script>
       function confirmAction(action) {
         if (action === "approve") {
@@ -20,71 +80,35 @@
     </script>
   </head>
   <body class="bg-gray-100 text-gray-800">
-    <!-- Navigation Bar -->
-    <nav class="bg-gray-100 shadow-lg">
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
       <div class="container mx-auto px-6 py-3">
         <div class="flex justify-between items-center">
           <div>
-            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
-              >Code Arena</a
-            >
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
           </div>
           <div class="hidden lg:flex lg:items-center">
-            <ul
-              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
-            >
+            <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
               <li class="nav-item">
-                <a
-                  class="text-gray-800 hover:text-gray-600 mx-2"
-                  href="{% url 'home' %}"
-                  >Home</a
-                >
+                <a class="text-gray-800 hover:text-gray-600 mx-2 nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'problems_list' %}">Problems</a>
               </li>
               {% if user.is_authenticated %}
+              {% if user.profile.role.name == 'admin' or user.profile.role.name == 'moderator'%}
               <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'profile' %}"
-                  >Profile</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'problems_list' %}"
-                  >Problems</a
-                >
-              </li>
-              {% if user.is_staff %}
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'review_problems' %}"
-                  >Review Problems</a
-                >
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'review_problems' %}">Review Problems</a>
               </li>
               {% endif %}
               <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'logout' %}"
-                  >Logout</a
-                >
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'profile' %}">Profile</a>
               </li>
               {% else %}
               <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'register' %}"
-                  >Register</a
-                >
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'register' %}">Register</a>
               </li>
               <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'login' %}"
-                  >Login</a
-                >
+                <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'login' %}">Login</a>
               </li>
               {% endif %}
             </ul>
@@ -95,43 +119,46 @@
 
     <!-- Approve Problem Section -->
     <section class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h1 class="text-3xl font-bold mb-4">
-        Approve Problem: {{ temp_problem.title }}
-      </h1>
-      <p class="mb-2">
-        <strong>Description:</strong> {{ temp_problem.description }}
-      </p>
-      <p class="mb-2">
-        <strong>Input Description:</strong> {{ temp_problem.input_description }}
-      </p>
-      <p class="mb-2">
-        <strong>Output Description:</strong> {{ temp_problem.output_description
-        }}
-      </p>
-      <p class="mb-2">
-        <strong>Example Input:</strong> {{ temp_problem.example_input }}
-      </p>
-      <p class="mb-2">
-        <strong>Example Output:</strong> {{ temp_problem.example_output }}
-      </p>
-      <p class="mb-2">
-        <strong>Difficulty:</strong> {{ temp_problem.difficulty }}
-      </p>
-
-      <h3 class="text-xl font-bold mb-2">Test Cases</h3>
-      {% for test_case in test_cases %}
-      <div class="p-4 bg-gray-300 shadow-md rounded-lg my-2">
-        <p><strong>Input Data:</strong> {{ test_case.input_data }}</p>
-        <h4 class="text-lg font-bold mb-2">Expected Outputs</h4>
-        {% for expected_output in test_case.temporary_expected_outputs.all %}
-        <p class="p-2 bg-gray-400 shadow-md rounded-lg my-1">
-          <strong>Output:</strong> {{ expected_output.output }}
+      <div class="section-border">
+        <h1 class="text-3xl font-bold mb-4">
+          Approve Problem: {{ temp_problem.title }}
+        </h1>
+        <p class="mb-2">
+          <strong>Description:</strong> {{ temp_problem.description }}
         </p>
+        <p class="mb-2">
+          <strong>Input Description:</strong> {{ temp_problem.input_description }}
+        </p>
+        <p class="mb-2">
+          <strong>Output Description:</strong> {{ temp_problem.output_description }}
+        </p>
+        <p class="mb-2">
+          <strong>Example Input:</strong> {{ temp_problem.example_input }}
+        </p>
+        <p class="mb-2">
+          <strong>Example Output:</strong> {{ temp_problem.example_output }}
+        </p>
+        <p class="mb-2">
+          <strong>Difficulty:</strong> {{ temp_problem.difficulty }}
+        </p>
+      </div>
+
+      <div class="section-border">
+        <h3 class="text-xl font-bold mb-2">Test Cases</h3>
+        {% for test_case in test_cases %}
+        <div class="test-case-container">
+          <p><strong>Input Data:</strong> {{ test_case.input_data }}</p>
+          <h4 class="text-lg font-bold mb-2">Expected Outputs</h4>
+          {% for expected_output in test_case.temporary_expected_outputs.all %}
+          <div class="expected-output-container">
+            <p><strong>Output:</strong> {{ expected_output.output }}</p>
+          </div>
+          {% endfor %}
+        </div>
         {% endfor %}
       </div>
-      {% endfor %}
 
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-4 ">
         <form
           method="POST"
           action="{% url 'approve_problem' temp_problem.pk %}"
@@ -162,9 +189,9 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
+    <footer class="bg-gray-100 text-gray-800 py-5 mt-10 footer">
       <div class="container mx-auto text-center">
-        <p>&copy; 2023 Code Arena. All rights reserved.</p>
+        <p>&copy; 2024 Code Arena. All rights reserved.</p>
       </div>
     </footer>
   </body>

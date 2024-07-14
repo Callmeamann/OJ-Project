@@ -1,139 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-white text-gray-800">
-    <!-- Navigation Bar -->
-    <nav class="bg-gray-100 shadow-lg">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div class="flex justify-between items-center">
-          <div>
-            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
-          </div>
-          <div class="flex lg:hidden">
-            <button
-              type="button"
-              class="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
-              aria-label="toggle menu"
-            >
-              <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
-                <path fill-rule="evenodd" d="M4 5h16M4 11h16M4 17h16" />
-              </svg>
-            </button>
-          </div>
-          <div class="hidden lg:flex lg:items-center">
-            <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
-              <li class="nav-item">
-                <a class="text-gray-800 hover:text-gray-600 mx-2" href="{% url 'home' %}">Home</a>
-              </li>
-              {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'profile' %}">Profile</a>
-              </li>
-              <li class="nav-item">
-                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'problems_list' %}">Problems</a>
-              </li>
-              <li class="nav-item">
-                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'logout' %}">Logout</a>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'register' %}">Register</a>
-              </li>
-              <li class="nav-item">
-                <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'login' %}">Login</a>
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    /* Keyframes for fade-in animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    /* Fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    /* Background gradient for hero section */
+    .hero-bg {
+      background: linear-gradient(140deg, #6b46c1, #4c51bf);
+    }
+    /* Navbar button hover effect */
+    .nav-item a {
+      position: relative;
+      display: inline-block;
+      padding-bottom: 2px;
+    }
+    .nav-item a::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #6b46c1; /* Purple color */
+      visibility: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+    .nav-item a:hover::before {
+      visibility: visible;
+      width: 100%;
+    }
+    /* Dropdown Menu */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      margin-top: 1rem;
+      width: 250px;
+      background-color: #2d2d2d; /* Dark gray */
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .dropdown-menu.active {
+      display: block;
+    }
+    .dropdown-menu a {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      color: #d3d3d3; /* Light gray */
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dropdown-menu a:hover:not(.bg-red-600) {
+      background-color: #4c51bf; /* Purple */
+      color: white;
+    }
+    .dropdown-menu a.bg-red-600:hover {
+      background-color: #e3342f; /* Red */
+    }
+    .dropdown-menu svg {
+      margin-right: 0.5rem;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #2d2d2d; /* Dark gray */
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 fade-in">
+  <!-- Navigation Bar -->
+  <nav class="bg-gray-100 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div>
+        <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
       </div>
-    </nav>
-    
-
-    <!-- Hero Section -->
-    <section class="bg-gray-500 text-white py-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl font-bold">Welcome to Arena for Coders</h1>
-        <p class="text-lg mt-4">
-          An online platform to test and improve your coding skills.
-        </p>
-        {% if not user.is_authenticated %}
-        <div class="mt-8">
-          <a
-            href="{% url 'register' %}"
-            class="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
-            >Register Now</a
-          >
-          <a
-            href="{% url 'login' %}"
-            class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
-            >Login</a
-          >
-        </div>
-        {% endif %}
+      <div class="flex lg:hidden">
+        <button
+          type="button"
+          class="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
+          aria-label="toggle menu"
+        >
+          <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
+            <path fill-rule="evenodd" d="M4 5h16M4 11h16M4 17h16" />
+          </svg>
+        </button>
       </div>
-    </section>
-
-    <!-- Content Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
-      <div class="flex flex-wrap -mx-4">
-        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
-          <h2 class="text-2xl font-semibold mb-4">Practice Problems</h2>
-          <p class="mb-4">
-            Explore a wide range of coding problems to practice and improve your
-            skills.
-          </p>
-          <a
-            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
-            href={% url 'problems_list' %}
-            role="button"
-            >View details &raquo;</a
-          >
-        </div>
-        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
-          <h2 class="text-2xl font-semibold mb-4">Contests</h2>
-          <p class="mb-4">
-            Participate in coding contests to test your skills against others.
-          </p>
-          <a
-            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
-            href="#"
-            role="button"
-            >View details &raquo;</a
-          >
-        </div>
-        <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
-          <h2 class="text-2xl font-semibold mb-4">Community</h2>
-          <p class="mb-4">
-            Join our community of coders to discuss and share knowledge.
-          </p>
-          <a
-            class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
-            href="#"
-            role="button"
-            >View details &raquo;</a
-          >
-        </div>
+      <div class="hidden lg:flex lg:items-center relative">
+        <ul class="flex items-center lg:mx-6 font-bold py-2 px-4 rounded">
+          <li class="nav-item">
+            <a class="text-gray-800 hover:text-gray-600 mx-2" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'problems_list' %}">Problems</a>
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <div class="relative">
+              <button id="profile-button" class="focus:outline-none">
+                {% if user.profile and user.profile.image %}
+                <img
+                  class="rounded-full w-10 h-10 mx-2 object-cover border-2 border-blue-700"
+                  src="{{ user.profile.image.url }}"
+                  alt="User Avatar"
+                />
+                {% else %}
+                <img
+                  class="rounded-full w-10 h-10 mx-2"
+                  src="https://via.placeholder.com/150"
+                  alt="User Avatar"
+                />
+                {% endif %}
+              </button>
+              <div id="dropdown-menu" class="dropdown-menu p-4 text-white">
+                <div class="text-center mb-4">
+                  {% if user.profile and user.profile.image %}
+                  <img
+                    class="rounded-full w-16 h-16 mx-auto object-cover border-2 border-white"
+                    src="{{ user.profile.image.url }}"
+                    alt="User Avatar"
+                  />
+                  {% else %}
+                  <img
+                    class="rounded-full w-16 h-16 mx-auto object-cover border-2 border-white"
+                    src="https://via.placeholder.com/150"
+                    alt="User Avatar"
+                  />
+                  {% endif %}
+                  <a class="block text-white-100 hover:text-gray-600 mt-2" href="{% url 'profile' %}">{{ user.username }}</a>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <a href="{% url 'problems_list' %}" class="flex items-center bg-gray-700 hover:bg-gray-600 p-2 rounded">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7"></path></svg>
+                    <p class="text-sm">Problem List</p>
+                  </a>
+                  <a href="" class="flex items-center bg-gray-700 hover:bg-gray-600 p-2 rounded">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7"></path></svg>
+                    <p class="text-sm">Submissions</p>
+                  </a>
+                </div>
+                <a href="{% url 'logout' %}" class="flex items-center bg-red-600 hover:bg-red-500 p-2 rounded mt-4">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7"></path></svg>
+                  <p class="text-sm">Sign Out</p>
+                </a>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'register' %}">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'login' %}">Login</a>
+          </li>
+          {% endif %}
+        </ul>
       </div>
     </div>
+  </nav>
 
-    <!-- Footer -->
-    <footer class="bg-gray-100 text-gray-800 py-5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p>&copy; 2023 MyOJ. All rights reserved.</p>
+  <!-- Hero Section -->
+  <section class="hero-bg text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-bold">Welcome to Arena for Coders</h1>
+      <p class="text-lg mt-4">
+        An online platform to test and improve your coding skills.
+      </p>
+      {% if not user.is_authenticated %}
+      <div class="mt-8">
+        <a
+          href="{% url 'register' %}"
+          class="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
+          >Register Now</a
+        >
+        <a
+          href="{% url 'login' %}"
+          class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded mx-2 transition duration-300"
+          >Login</a
+        >
       </div>
-    </footer>
+      {% endif %}
+    </div>
+  </section>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
-  </body>
+  <!-- Content Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+    <div class="flex flex-wrap -mx-4">
+      <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Practice Problems</h2>
+        <p class="mb-4">
+          Explore a wide range of coding problems to practice and improve your
+          skills.
+        </p>
+        <a
+          class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+          href={% url 'problems_list' %}
+          role="button"
+          >View details &raquo;</a
+        >
+      </div>
+      <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Contests</h2>
+        <p class="mb-4">
+          Participate in coding contests to test your skills against others.
+        </p>
+        <a
+          class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+          href="#"
+          role="button"
+          id="contest-details-button"
+          >View details &raquo;</a
+        >
+      </div>
+      <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Community</h2>
+        <p class="mb-4">
+          Join our community of coders to discuss and share knowledge.
+        </p>
+        <a
+          class="bg-gray-600 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition duration-300"
+          href={% url 'community_list' %}
+          role="button"
+          >View details &raquo;</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Summary Section -->
+  <section class="bg-gray-100 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold mb-4">About Code Arena</h2>
+      <p class="text-lg mb-6">
+        Code Arena is a premier online platform designed to offer a holistic learning experience for aspiring coders and seasoned developers alike. With a rich repository of carefully curated problems and engaging contests, our mission is to foster a vibrant community of learners and enthusiasts who can collaborate, compete, and grow together.
+      </p>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div id="contest-modal" class="modal flex">
+    <div class="modal-content">
+      <span class="close" id="close-modal">&times;</span>
+      <p>We apologize for the inconvenience, but the contest details are currently in progress and will be available shortly. Please check back later for the most up-to-date information. Thank you for your understanding and patience.</p>
+    </div>
+  </div>
+
+  <!-- About Creator and Social Links Section -->
+  <footer class="bg-gray-100 text-gray-800 py-5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xl font-bold mb-2">About the Creator</p>
+      <p class="mb-4">
+        Created by Aman Gusain, a passionate aspiring software engineer with a vision to make coding more accessible and enjoyable for everyone. <br>
+        Connect with me on social media:
+      </p>
+      <div class="flex justify-center space-x-4">
+        <a href="https://x.com/Demon9892356041" class="text-blue-500 hover:text-blue-700">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.897-.959-2.178-1.559-3.594-1.559-2.717 0-4.924 2.207-4.924 4.917 0 .39.045.765.127 1.124-4.094-.205-7.725-2.165-10.148-5.144-.424.722-.666 1.561-.666 2.475 0 1.71.87 3.219 2.188 4.099-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.828-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.416-1.68 1.323-3.809 2.108-6.102 2.108-.39 0-.779-.023-1.17-.067 2.189 1.396 4.768 2.209 7.557 2.209 9.054 0 14-7.497 14-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.562 2.462-2.548l-.047-.02z"></path>
+          </svg>
+        </a>
+        <a href="https://github.com/Callmeamann" class="text-gray-800 hover:text-gray-900">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.247c-5.5 0-9.941 4.441-9.941 9.941 0 4.398 2.865 8.13 6.839 9.447.5.092.682-.217.682-.483 0-.238-.009-.868-.014-1.704-2.781.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.463-1.11-1.463-.907-.62.069-.608.069-.608 1.002.07 1.53 1.029 1.53 1.029.892 1.529 2.341 1.088 2.91.832.092-.647.349-1.088.635-1.338-2.221-.253-4.555-1.111-4.555-4.941 0-1.09.389-1.984 1.029-2.682-.102-.254-.446-1.278.098-2.661 0 0 .84-.269 2.75 1.025a9.58 9.58 0 012.5-.335 9.6 9.6 0 012.5.335c1.91-1.294 2.75-1.025 2.75-1.025.544 1.383.199 2.407.098 2.661.64.698 1.028 1.592 1.028 2.682 0 3.841-2.337 4.684-4.565 4.931.359.309.678.919.678 1.854 0 1.338-.012 2.418-.012 2.746 0 .268.181.579.688.579 3.974-1.317 6.839-5.049 6.839"> </path>
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/aman-gusain-10321625a" class="text-blue-700 hover:text-blue-800">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.785-1.75-1.75s.784-1.75 1.75-1.75 1.75.785 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.797c0-1.387-.027-3.169-1.939-3.169-1.94 0-2.237 1.515-2.237 3.073v5.893h-3v-10h2.881v1.367h.041c.401-.758 1.382-1.557 2.846-1.557 3.042 0 3.604 2.001 3.604 4.603v5.587z"></path>
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/_aman_gusain_/" class="text-pink-600 hover:text-pink-800">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.849.07 1.366.062 2.633.369 3.608 1.344.975.975 1.282 2.242 1.344 3.608.058 1.265.07 1.645.07 4.849s-.012 3.584-.07 4.849c-.062 1.366-.369 2.633-1.344 3.608-.975.975-2.242 1.282-3.608 1.344-1.265.058-1.645.07-4.849.07s-3.584-.012-4.849-.07c-1.366-.062-2.633-.369-3.608-1.344-.975-.975-1.282-2.242-1.344-3.608-.058-1.265-.07-1.645-.07-4.849s.012-3.584.07-4.849c.062-1.366.369-2.633 1.344-3.608.975-.975 2.242-1.282 3.608-1.344 1.265-.058 1.645-.07 4.849-.07zm0-2.163c-3.259 0-3.67.012-4.947.071-1.321.062-2.685.384-3.764 1.463-1.079 1.079-1.401 2.443-1.463 3.764-.059 1.277-.071 1.688-.071 4.947s.012 3.67.071 4.947c.062 1.321.384 2.685 1.463 3.764 1.079 1.079 2.443 1.401 3.764 1.463 1.277.059 1.688.071 4.947.071s3.67-.012 4.947-.071c1.321-.062 2.685-.384 3.764-1.463 1.079-1.079 1.401-2.443 1.463-3.764.059-1.277.071-1.688.071-4.947s-.012-3.67-.071-4.947c-.062-1.321-.384-2.685-1.463-3.764-1.079-1.079-2.443-1.401-3.764-1.463-1.277-.059-1.688-.071-4.947-.071zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162c3.403 0 6.162-2.759 6.162-6.162s-2.759-6.162-6.162-6.162zm0 10.324c-2.293 0-4.162-1.869-4.162-4.162s1.869-4.162 4.162-4.162 4.162 1.869 4.162 4.162-1.869 4.162-4.162 4.162zm6.406-11.845c-.796 0-1.44.645-1.44 1.441 0 .796.645 1.441 1.441 1.441.797 0 1.441-.645 1.441-1.441 0-.797-.644-1.441-1.441-1.441z"></path>
+          </svg>
+        </a>
+        <a href="mailto:amangusain000@gmail.com" class="text-gray-800 hover:text-gray-900">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 13.6l-11.995-9.6c-.001-.081.004-.162.004-.241 0-1.104.896-2 2-2h20c1.104 0 2 .896 2 2 0 .079-.003.16-.004.241l-11.995 9.6zM12 15.6l-11.995 9.6c-.001-.081.004-.162.004-.241 0-1.104.896-2 2-2h20c1.104 0 2 .896 2 2 0 .079-.003.16-.004.241l-11.995-9.6z"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
+      <p>&copy; 2024 Code Arena. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('profile-button').onclick = function() {
+      var menu = document.getElementById('dropdown-menu');
+      menu.classList.toggle('active');
+    };
+
+    document.getElementById('contest-details-button').onclick = function(event) {
+      event.preventDefault(); // Prevent the default link behavior
+      document.getElementById('contest-modal').style.display = 'flex'; // Show the modal
+    };
+
+    document.getElementById('close-modal').onclick = function() {
+      document.getElementById('contest-modal').style.display = 'none'; // Hide the modal
+    };
+
+    window.onclick = function(event) {
+      var modal = document.getElementById('contest-modal');
+      if (event.target == modal) {
+        modal.style.display = 'none'; // Hide the modal if the user clicks outside of it
+      }
+    };
+  </script>
+</body>
 </html>
+

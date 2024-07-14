@@ -1,207 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ problem.title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
     <style>
-        .code-editor {
-            background-color: #1e1e1e;
-            color: #dcdcdc;
-            width: 100%;
-            height: 500px;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            resize: none; /* Disable resizing */
-        }
-        .hidden-textarea {
-            display: none;
+        .nav-link {
+            border-radius: 4px;
+            transition: color 0.3s ease;
+          }
+          .nav-link:hover {
+            color: #6b46c1; /* Purple color on hover */
+          }
+    
+          .nav-item a {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 2px;
+          }
+    
+          .nav-item a::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #6b46c1; /* Purple color */
             visibility: hidden;
-            height: 0;
-            margin: 0;
-            padding: 0;
-        }
-        .resizable-container {
-            display: flex;
-            height: calc(100vh - 64px); /* Adjust height to account for the navbar */
-            overflow: hidden; /* Ensure no overflow */
-        }
-        .resizable {
-            padding: 20px;
-            overflow: auto;
-        }
-        .resizer {
-            width: 5px;
-            cursor: ew-resize;
-            background-color: #ddd;
-            height: 100%;
-        }
-        #problem-section,
-        #editor-section {
-            padding: 16px; /* Consistent padding for both sections */
-            overflow: auto; /* Ensure overflow handling */
-        }
-        #problem-section {
-            width: 40%; /* Default 40% width */
-        }
-        #editor-section {
-            width: 60%; /* Default 60% width */
-        }
-        .collapsible {
-            background-color: #ffffff;
-            color: #444;
-            cursor: pointer;
-            padding: 10px;
+            transition: all 0.3s ease-in-out;
+          }
+    
+          .nav-item a:hover::before {
+            visibility: visible;
             width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-        }
-        .collapsible:after {
-            content: '\002B';
-            color: #777;
-            font-weight: bold;
-            float: right;
-            margin-left: 5px;
-        }
-        .collapsible.active:after {
-            content: "\2212";
-        }
-        .content {
-            padding: 3 4px;
-            display: none;
-            overflow: hidden;
-            background-color: #f9f9f9;
-        }
- 
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
-    <!-- Navigation Bar -->
-    <nav class="bg-gray-100 shadow-lg">
-        <div class="container mx-auto px-6 py-3">
-            <div class="flex justify-between items-center">
-                <div>
-                    <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
-                </div>
-                <div class="hidden lg:flex lg:items-center">
-                    <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold">
-                        <li class="nav-item">
-                            <a class="text-gray-800 hover:text-gray-600 mx-2" href="{% url 'home' %}">Home</a>
-                        </li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'profile' %}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'problems_list' %}">Problems</a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'logout' %}">Logout</a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'register' %}">Register</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="text-gray-900 hover:text-gray-600 mx-2" href="{% url 'login' %}">Login</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+          }
 
+      .code-editor {
+        background-color: #1e1e1e;
+        color: #dcdcdc;
+        width: 100%;
+        height: 500px;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: "Courier New", Courier, monospace;
+        resize: none; /* Disable resizing */
+      }
+      .hidden-textarea {
+        display: none;
+        visibility: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .resizable-container {
+        display: flex;
+        height: calc(
+          100vh - 64px
+        ); /* Adjust height to account for the navbar */
+        overflow: hidden; /* Ensure no overflow */
+      }
+      .resizable {
+        padding: 20px;
+        overflow: auto;
+      }
+      .resizer {
+        width: 5px;
+        cursor: ew-resize;
+        background-color: #ddd;
+        height: 100%;
+      }
+      #problem-section,
+      #editor-section {
+        padding: 16px; /* Consistent padding for both sections */
+        overflow: auto; /* Ensure overflow handling */
+      }
+      #problem-section {
+        width: 40%; /* Default 40% width */
+      }
+      #editor-section {
+        width: 60%; /* Default 60% width */
+      }
+      .collapsible {
+        background-color: #ffffff;
+        color: #444;
+        cursor: pointer;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+      }
+      .collapsible:after {
+        content: "\002B";
+        color: #777;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+      }
+      .collapsible.active:after {
+        content: "\2212";
+      }
+      .content {
+        padding: 3 4px;
+        display: none;
+        overflow: hidden;
+        background-color: #f9f9f9;
+      }
+
+      .footer {
+        border-top: 1px solid #e2e8f0; /* Light gray */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
+      <div class="container mx-auto px-6 py-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
+              >Code Arena</a
+            >
+          </div>
+          <div class="hidden lg:flex lg:items-center">
+            <ul
+              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
+            >
+              <li class="nav-item">
+                <a
+                  class="text-gray-800 hover:text-gray-600 mx-2 nav-link"
+                  href="{% url 'home' %}"
+                  >Home</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2 nav-link"
+                  href="{% url 'problems_list' %}"
+                  >Problems</a
+                >
+              </li>
+              {% if user.is_authenticated %}
+              
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2 nav-link"
+                  href="{% url 'profile' %}"
+                  >Profile</a
+                >
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2 nav-link"
+                  href="{% url 'register' %}"
+                  >Register</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="text-gray-900 hover:text-gray-600 mx-2 nav-link"
+                  href="{% url 'login' %}"
+                  >Login</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
 
     <!-- Main Content -->
     <div class="resizable-container">
-        <!-- Problem Section -->
-        <section class="resizable" id="problem-section">
-            <div class="p-4 bg-white shadow-md rounded-lg">
-                <h1 class="text-3xl font-bold">{{ problem.id }}. {{ problem.title }}</h1>
-                <p class="mt-4">{{ problem.description }}</p>
-                <p class="mt-4">
-                    <strong>Input:</strong> {{ problem.input_description }}
-                </p>
-                <p class="mt-4">
-                    <strong>Output:</strong> {{ problem.output_description }}
-                </p>
-                <p class="mt-4"><strong>Example:</strong></p>
-                <pre class="bg-gray-200 p-4 rounded mb-4 mt-2">{{ problem.example_input }}</pre>
-                <pre class="bg-gray-200 p-4 rounded">{{ problem.example_output }}</pre>
-            </div>
+      <!-- Problem Section -->
+      <section class="resizable" id="problem-section">
+        <div class="p-4 bg-white shadow-md rounded-lg">
+          <h1 class="text-3xl font-bold">
+            {{ problem.id }}. {{ problem.title }}
+          </h1>
+          
+          {% if solved %}
+          <div class="flex items-center bg-green-100 text-green-600 font-semibold px-3 py-1 rounded-full mt-2">
+            <span class="mr-2">Solved</span>
+            <svg class="solved-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          {% endif %}
+          <p class="invisible">{{ solved }}</p>  <!-- Add this line to check the value -->
+          <p class="mt-4">{{ problem.description }}</p>
+          <p class="mt-4">
+            <strong>Input:</strong> {{ problem.input_description }}
+          </p>
+          <p class="mt-4">
+            <strong>Output:</strong> {{ problem.output_description }}
+          </p>
+          <p class="mt-4"><strong>Example:</strong></p>
+          <pre class="bg-gray-200 p-4 rounded mb-4 mt-2">
+{{ problem.example_input }}</pre
+          >
+          <pre class="bg-gray-200 p-4 rounded">
+{{ problem.example_output }}</pre
+          >
+        </div>
+      </section>
+      <!-- Resizer -->
+      <div class="resizer" id="resizer"></div>
 
-        </section>
-        <!-- Resizer -->
-        <div class="resizer" id="resizer"></div>
-
-        <!-- Code Editor and Custom Input/Output Section -->
-        <section class="resizable space-y-6" id="editor-section">
-            <!-- Code Editor Section -->
-            {% load crispy_forms_tags %}
-            <div class="bg-white p-4 shadow-md rounded-lg">
-                <h2 class="text-2xl font-bold mb-4">Arena </h2>
-                <form method="POST" action="{% url 'run_code_transfer' problem.pk %}" class="space-y-4" id="code-form">
-                    {% csrf_token %}
-                    <!-- Language Dropdown -->
-                    <div class="form-group">
-                        {{ form.language|as_crispy_field }}
-                    </div>
-                    <!-- Code Textarea -->
-                    <div class="form-group">
-                        <!-- Hidden textarea to store the code for form submission -->
-                        {{ form.code }}
-                        {{ form.input_data }}
-                        <!-- Ace Editor container -->
-                        <div id="editor" class="code-editor"></div>
-                    </div>
-                    <!-- Action Buttons -->
-                    <div class="flex space-x-4">
-                        <button type="submit" name="run"
-                                class="bg-white border border-gray-900 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded shadow-lg transition duration-300">
-                            Run
-                        </button>
-                        <button type="submit" name="submit"
-                                class="bg-purple-600 border border-purple-900 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-300">
-                            Submit
-                        </button>
-                    </div>
-                </form>
+      <!-- Code Editor and Custom Input/Output Section -->
+      <section class="resizable space-y-6" id="editor-section">
+        <!-- Code Editor Section -->
+        {% load crispy_forms_tags %}
+        <div class="bg-white p-4 shadow-md rounded-lg">
+          <h2 class="text-2xl font-bold mb-4">Arena</h2>
+          <form
+            method="POST"
+            action="{% url 'run_code_transfer' problem.pk %}"
+            class="space-y-4"
+            id="code-form"
+          >
+            {% csrf_token %}
+            <!-- Language Dropdown -->
+            <div class="form-group">{{ form.language|as_crispy_field }}</div>
+            <!-- Code Textarea -->
+            <div class="form-group">
+              <!-- Hidden textarea to store the code for form submission -->
+              {{ form.code }} {{ form.input_data }}
+              <!-- Ace Editor container -->
+              <div id="editor" class="code-editor"></div>
             </div>
-
-            <!-- Custom Input and Output Section -->
-            <button type="button" class="collapsible font-bold bg-gray-100 shadow-lg">Code Inspection</button>
-            <div class="content">
-                <div class="bg-white p-4 shadow-md rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="custom_input" class="font-bold block text-gray-700">Custom Input:</label>
-                        <textarea id="custom_input" rows="4" class="w-full p-2 border border-gray-400 rounded"></textarea>
-                    </div>
-                    <div>
-                        <label for="custom_output" class="font-bold block text-gray-700">Custom Output:</label>
-                        <textarea id="custom_output" rows="4" class="w-full p-2 border border-gray-400 rounded" readonly></textarea>
-                    </div>
-                </div>
+            <!-- Action Buttons -->
+            <div class="flex space-x-4">
+              <button
+                type="submit"
+                name="run"
+                class="bg-white border border-gray-900 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded shadow-lg transition duration-300"
+              >
+                Run
+              </button>
+              <button
+                type="submit"
+                name="submit"
+                class="bg-purple-600 border border-purple-900 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-300"
+              >
+                Submit
+              </button>
             </div>
+          </form>
+        </div>
 
-            <!-- Submission Verdict Section -->
-            <div class="bg-white p-4 shadow-md rounded-lg">
-                <h2 class="text-2xl font-bold">Verdict</h2>
-                <div id="submission-verdict" class="mt-4"></div>
+        <!-- Custom Input and Output Section -->
+        <button
+          type="button"
+          class="collapsible font-bold bg-gray-100 shadow-lg"
+        >
+          Code Inspection
+        </button>
+        <div class="content">
+          <div
+            class="bg-white p-4 shadow-md rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <div>
+              <label for="custom_input" class="font-bold block text-gray-700"
+                >Custom Input:</label
+              >
+              <textarea
+                id="custom_input"
+                rows="4"
+                class="w-full p-2 border border-gray-400 rounded"
+              ></textarea>
             </div>
-        </section>
+            <div>
+              <label for="custom_output" class="font-bold block text-gray-700"
+                >Custom Output:</label
+              >
+              <textarea
+                id="custom_output"
+                rows="4"
+                class="w-full p-2 border border-gray-400 rounded"
+                readonly
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submission Verdict Section -->
+        <div class="bg-white p-4 shadow-md rounded-lg">
+          <h2 class="text-2xl font-bold">Verdict</h2>
+          <div id="submission-verdict" class="mt-4"></div>
+        </div>
+      </section>
     </div>
 
     <!-- Footer -->
     <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Code Arena. All rights reserved.</p>
-        </div>
+      <div class="container mx-auto text-center">
+        <p>&copy; 2024 Code Arena. All rights reserved.</p>
+      </div>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -216,205 +318,211 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-java.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-c_cpp.js"></script>
     <script>
-        // CSRF token setup for AJAX
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+      // CSRF token setup for AJAX
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
             }
-            return cookieValue;
+          }
         }
-        var csrftoken = getCookie('csrftoken');
-    
-        function csrfSafeMethod(method) {
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        return cookieValue;
+      }
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });
+
+      // Resizable columns
+      const resizer = document.getElementById("resizer");
+      const leftSide = document.getElementById("problem-section");
+      const rightSide = document.getElementById("editor-section");
+
+      let x = 0;
+      let y = 0;
+      let leftWidth = 0;
+
+      const mouseDownHandler = function (e) {
+        x = e.clientX;
+        y = e.clientY;
+        leftWidth = leftSide.getBoundingClientRect().width;
+
+        document.addEventListener("mousemove", mouseMoveHandler);
+        document.addEventListener("mouseup", mouseUpHandler);
+      };
+
+      const mouseMoveHandler = function (e) {
+        const dx = e.clientX - x;
+
+        const newLeftWidth =
+          ((leftWidth + dx) * 100) /
+          resizer.parentNode.getBoundingClientRect().width;
+        leftSide.style.width = `${newLeftWidth}%`;
+        rightSide.style.width = `${100 - newLeftWidth}%`;
+
+        resizer.style.cursor = "col-resize";
+        document.body.style.cursor = "col-resize";
+
+        leftSide.style.userSelect = "none";
+        leftSide.style.pointerEvents = "none";
+
+        rightSide.style.userSelect = "none";
+        rightSide.style.pointerEvents = "none";
+      };
+
+      const mouseUpHandler = function () {
+        resizer.style.removeProperty("cursor");
+        document.body.style.removeProperty("cursor");
+
+        leftSide.style.removeProperty("user-select");
+        leftSide.style.removeProperty("pointer-events");
+
+        rightSide.style.removeProperty("user-select");
+        rightSide.style.removeProperty("pointer-events");
+
+        document.removeEventListener("mousemove", mouseMoveHandler);
+        document.removeEventListener("mouseup", mouseUpHandler);
+      };
+
+      resizer.addEventListener("mousedown", mouseDownHandler);
+
+      // Initialize Ace Editor
+      $(document).ready(function () {
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.session.setMode("ace/mode/plain_text");
+        editor.setFontSize(16);
+
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: true,
+          showLineNumbers: true,
+          showGutter: true,
+          vScrollBarAlwaysVisible: true,
+          tabSize: 4,
+          useSoftTabs: true,
+          wrap: true,
+        });
+
+        document.getElementById("language-select").onchange = function () {
+          var language = this.options[this.selectedIndex].value;
+          // console.log("Selected language:", language);
+          var mode = "ace/mode/plain_text";
+          if (language === "1") {
+            mode = "ace/mode/c_cpp";
+          } else if (language === "2") {
+            mode = "ace/mode/java";
+          } else if (language === "3") {
+            mode = "ace/mode/python";
+          }
+          editor.session.setMode(mode);
+        };
+
+        $("#code-form").on("submit", function (event) {
+          event.preventDefault();
+          $("#code-textarea").val(editor.getValue());
+          $("#input-data").val($("#custom_input").val());
+
+          // Debugging logs
+          //console.log("Editor value:", editor.getValue());
+          //console.log("Custom input value:", $("#custom_input").val());
+
+          var action = $(document.activeElement).attr("name");
+          if (action === "run") {
+            runCodeTransfer();
+          } else if (action === "submit") {
+            submitCodeTransfer();
+          }
+        });
+
+        function runCodeTransfer() {
+          var formData = $("#code-form").serialize();
+          // console.log("Run formData:", formData); // Debugging log
+
+          $.ajax({
+            type: "POST",
+            url: $("#code-form").attr("action"),
+            data: formData,
+            success: function (response) {
+              // console.log("Run code successful:", response);
+              if (response.result) {
+                $("#custom_output").val(response.result);
+              } else {
+                $("#custom_output").val("No output received.");
+              }
+            },
+            error: function (error) {
+              // console.error("Error submitting code:", error);
+              $("#custom_output").html("Error submitting code.");
+            },
+          });
         }
-    
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
+
+        function submitCodeTransfer() {
+          // console.log("Submitting code...");
+          $("#custom_output").val("");
+          $("#submission-verdict").html("");
+          var formData = $("#code-form").serialize();
+          var submitUrl = $("#code-form")
+            .attr("action")
+            .replace("run/", "submit/");
+          // console.log("Submit formData:", formData); // Debugging log
+          // console.log("Submit URL:", submitUrl); // Debugging log
+
+          $.ajax({
+            type: "POST",
+            url: submitUrl,
+            data: formData,
+            success: function (response) {
+              // console.log("Submit code successful:", response);
+              let verdictHtml = "";
+              if (response.status === "Success") {
+                verdictHtml =
+                  '<p class="text-green-600 font-bold">All test cases passed!</p>';
+              } else if (response.status === "Fail") {
+                verdictHtml = `<p class="text-red-600 font-bold">Test case ${response.test_id} failed<br/>Expected: ${response.expected_output}<br/>Got: ${response.actual_output}</p>`;
+              }
+              $("#submission-verdict").html(verdictHtml);
+            },
+            error: function (error) {
+              // console.error("Error submitting code:", error);
+            },
+          });
+        }
+
+        // Collapsible sections
+        var coll = document.getElementsByClassName("collapsible");
+        for (var i = 0; i < coll.length; i++) {
+          coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+              content.style.display = "none";
+            } else {
+              content.style.display
+              content.style.display = "block";
             }
-        });
-    
-        // Resizable columns
-        const resizer = document.getElementById('resizer');
-        const leftSide = document.getElementById('problem-section');
-        const rightSide = document.getElementById('editor-section');
-    
-        let x = 0;
-        let y = 0;
-        let leftWidth = 0;
-    
-        const mouseDownHandler = function(e) {
-            x = e.clientX;
-            y = e.clientY;
-            leftWidth = leftSide.getBoundingClientRect().width;
-    
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler);
-        };
-    
-        const mouseMoveHandler = function(e) {
-            const dx = e.clientX - x;
-    
-            const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
-            leftSide.style.width = `${newLeftWidth}%`;
-            rightSide.style.width = `${100 - newLeftWidth}%`;
-    
-            resizer.style.cursor = 'col-resize';
-            document.body.style.cursor = 'col-resize';
-    
-            leftSide.style.userSelect = 'none';
-            leftSide.style.pointerEvents = 'none';
-    
-            rightSide.style.userSelect = 'none';
-            rightSide.style.pointerEvents = 'none';
-        };
-    
-        const mouseUpHandler = function() {
-            resizer.style.removeProperty('cursor');
-            document.body.style.removeProperty('cursor');
-    
-            leftSide.style.removeProperty('user-select');
-            leftSide.style.removeProperty('pointer-events');
-    
-            rightSide.style.removeProperty('user-select');
-            rightSide.style.removeProperty('pointer-events');
-    
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
-        };
-    
-        resizer.addEventListener('mousedown', mouseDownHandler);
-    
-        // Initialize Ace Editor
-        $(document).ready(function () {
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/twilight");
-            editor.session.setMode("ace/mode/plain_text");
-            editor.setFontSize(16);
-    
-            ace.require("ace/ext/language_tools");
-            editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true,
-                showLineNumbers: true,
-                showGutter: true,
-                vScrollBarAlwaysVisible: true,
-                tabSize: 4,
-                useSoftTabs: true,
-                wrap: true,
-            });
-    
-            document.getElementById('language-select').onchange = function () {
-                var language = this.options[this.selectedIndex].value;
-                console.log('Selected language:', language);
-                var mode = "ace/mode/plain_text";
-                if (language === '1') {
-                    mode = "ace/mode/c_cpp";
-                } else if (language === '2') {
-                    mode = "ace/mode/java";
-                } else if (language === '3') {
-                    mode = "ace/mode/python";
-                }
-                editor.session.setMode(mode);
-            };
-    
-            $('#code-form').on('submit', function (event) {
-                event.preventDefault();
-                $('#code-textarea').val(editor.getValue());
-                $('#input-data').val($('#custom_input').val());
-    
-                // Debugging logs
-                console.log('Editor value:', editor.getValue());
-                console.log('Custom input value:', $('#custom_input').val());
-    
-                var action = $(document.activeElement).attr('name');
-                if (action === 'run') {
-                    runCodeTransfer();
-                } else if (action === 'submit') {
-                    submitCodeTransfer();
-                }
-            });
-    
-            function runCodeTransfer() {
-                var formData = $('#code-form').serialize();
-                console.log('Run formData:', formData); // Debugging log
-    
-                $.ajax({
-                    type: 'POST',
-                    url: $('#code-form').attr('action'),
-                    data: formData,
-                    success: function (response) {
-                        console.log('Run code successful:', response);
-                        if (response.result) {
-                            $('#custom_output').val(response.result);
-                        } else {
-                            $('#custom_output').val('No output received.');
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error submitting code:', error);
-                        $('#custom_output').html('Error submitting code.');
-                    }
-                });
-            }
-    
-            function submitCodeTransfer() {
-                console.log('Submitting code...');
-                $('#custom_output').val('');
-                $('#submission-verdict').html('');
-                var formData = $('#code-form').serialize();
-                var submitUrl = $('#code-form').attr('action').replace('run/', 'submit/');
-                console.log('Submit formData:', formData); // Debugging log
-                console.log('Submit URL:', submitUrl); // Debugging log
-    
-                $.ajax({
-                    type: 'POST',
-                    url: submitUrl,
-                    data: formData,
-                    success: function (response) {
-                        console.log('Submit code successful:', response);
-                        let verdictHtml = '';
-                        if (response.status === 'Success') {
-                            verdictHtml = '<p class="text-green-600 font-bold">All test cases passed!</p>';
-                        } else if (response.status === 'Fail') {
-                            verdictHtml = `<p class="text-red-600 font-bold">Test case ${response.test_id} failed<br/>Expected: ${response.expected_output}<br/>Got: ${response.actual_output}</p>`;
-                        }
-                        $('#submission-verdict').html(verdictHtml);
-                    },
-                    error: function (error) {
-                        console.error('Error submitting code:', error);
-                    }
-                });
-            }
-    
-            // Collapsible sections
-            var coll = document.getElementsByClassName("collapsible");
-            for (var i = 0; i < coll.length; i++) {
-                coll[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var content = this.nextElementSibling;
-                    if (content.style.display === "block") {
-                        content.style.display = "none";
-                    } else {
-                        content.style.display = "block";
-                    }
-                });
-            }
-        });
+          });
+        }
+      });
     </script>
-    
-    
-</body>
+  </body>
 </html>

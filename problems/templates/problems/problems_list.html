@@ -1,138 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Problems List</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-gray-100 text-gray-800">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        .nav-link {
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #6b46c1; /* Purple color on hover */
+        }
+
+        .nav-item a {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 2px;
+        }
+
+        .nav-item a::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #6b46c1; /* Purple color */
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-item a:hover::before {
+            visibility: visible;
+            width: 100%;
+        }
+
+        .solved-icon {
+            color: green;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
     <!-- Navigation Bar -->
-    <nav class="bg-gray-100 shadow-lg">
-      <div class="container mx-auto px-6 py-3">
-        <div class="flex justify-between items-center">
-          <div>
-            <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}"
-              >Code Arena</a
-            >
-          </div>
-          <div class="hidden lg:flex lg:items-center">
-            <ul
-              class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded"
-            >
-              <li class="nav-item">
-                <a
-                  class="text-gray-800 hover:text-gray-600 mx-2"
-                  href="{% url 'home' %}"
-                  >Home</a
-                >
-              </li>
-              {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'profile' %}"
-                  >Profile</a
-                >
-              </li>
-              {% if user.is_staff %}
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'review_problems' %}"
-                  >Review Problems</a
-                >
-              </li>
-              {% endif %}
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'logout' %}"
-                  >Logout</a
-                >
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'register' %}"
-                  >Register</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="text-gray-900 hover:text-gray-600 mx-2"
-                  href="{% url 'login' %}"
-                  >Login</a
-                >
-              </li>
-              {% endif %}
-            </ul>
-          </div>
+    <nav class="bg-gray-100 shadow-lg border-b border-gray-300">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a class="text-purple-600 text-xl font-bold" href="{% url 'home' %}">Code Arena</a>
+                </div>
+                <div class="hidden lg:flex lg:items-center">
+                    <ul class="flex flex-col lg:flex-row lg:mx-6 font-bold py-2 px-4 rounded">
+                        <li class="nav-item">
+                            <a class="text-gray-800 hover:text-gray-600 mx-2 nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        {% if user.profile.role.name == 'admin' or user.profile.role.name == 'moderator'%}
+                        <li class="nav-item">
+                            <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'review_problems' %}">Review Problems</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'community_list' %}">Community</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'profile' %}">Profile</a>
+                        </li>
+
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="text-gray-900 hover:text-gray-600 mx-2 nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </nav>
 
     <!-- Problems List Section -->
     <section class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Explore Our Problems</h1>
-        <button
-          id="add-problem-btn"
-          class="btn btn-primary text-white bg-purple-600 hover:bg-purple-800 py-2 px-4 rounded"
-          onclick="window.location.href='{% url 'add_problem' %}'"
-        >
-          Add New Problem
-        </button>
-      </div>
-      <form method="GET" action="{% url 'problems_list' %}" class="mt-4">
-        <input
-          type="text"
-          name="q"
-          value="{{ query|default:'' }}"
-          placeholder="Search by Problem ID or Title"
-          class="w-full p-2 border border-gray-300 rounded"
-        />
-      </form>
-      <div class="mt-6">
-        {% if problems %}
-        <ul class="divide-y divide-gray-200">
-          {% for problem in problems %}
-          <li class="py-4">
-            <div class="flex items-center">
-              <span class="text-gray-600 font-bold mr-2"
-                >Problem ID: {{ problem.id }}</span
-              >
-              <a
-                href="{% url 'problem_detail' problem.pk %}"
-                class="text-xl font-semibold text-purple-600 hover:text-purple-800"
-                >{{ problem.title }}</a
-              >
-            </div>
-            <p class="text-gray-600 mt-1">
-              {{ problem.description|slice:":300" }}...
-            </p>
-          </li>
-          {% endfor %}
-        </ul>
-        {% else %}
-        <p class="text-gray-600 mt-4">No problems found.</p>
-        {% endif %}
-      </div>
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-bold">Explore Our Problems</h1>
+            <button id="add-problem-btn" class="btn btn-primary text-white bg-purple-600 hover:bg-purple-800 py-2 px-4 rounded" onclick="window.location.href='{% url 'add_problem' %}'">
+                <span class="font-bold text-1xl mr-2">+</span> Add Problem
+            </button>
+        </div>
+        <form method="GET" action="{% url 'problems_list' %}" class="mt-4">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search by Problem ID or Title" class="w-full p-2 border border-gray-300 rounded" />
+        </form>
+        <div class="mt-6">
+            {% if problems %}
+            <ul class="divide-y divide-gray-200">
+                {% for problem in problems %}
+                <li class="py-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="text-gray-600 font-bold mr-2">Problem ID: {{ problem.id }}</span>
+                            <a href="{% url 'problem_detail' problem.pk %}" class="text-xl font-semibold text-purple-600 hover:text-purple-800">{{ problem.title }}</a>
+                        </div>
+                        {% if user.is_authenticated and problem.id in solved_problems %}
+                        <div class="flex items-center bg-green-100 text-green-600 font-semibold px-2 py-1 rounded-full">
+                          <span class="mr-2">Solved</span>
+                          <svg class="solved-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                      </div>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-600 mt-1">{{ problem.description|slice:":300" }}...</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600 mt-4">No problems found.</p>
+            {% endif %}
+        </div>
     </section>
 
     <!-- Footer -->
     <footer class="bg-gray-100 text-gray-800 py-5 mt-10">
-      <div class="container mx-auto text-center">
-        <p>&copy; 2023 Code Arena. All rights reserved.</p>
-      </div>
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Code Arena. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.js"></script>
-  </body>
+</body>
 </html>
