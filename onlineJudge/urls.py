@@ -10,7 +10,7 @@ urlpatterns = [
     path('home/', include('homepage.urls')),  # homepage app
     path('problems/', include('problems.urls')),
     path('submissions/', include('submissions.urls')),
-    path('contests/', include('contests.urls')),
+    # path('contests/', include('contests.urls')),
     path('community/', include('community.urls')),
 ]
 

@@ -26,9 +26,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = 'django-insecure-y7^$jrsd1214efjb7ycsfh5@s47$0s%(lrp_)(u6#xl)5lpefo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False 
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
+
+ALLOWED_HOSTS = [
+    'codearena.tech', 
+    'www.codearena.tech',
+    'localhost', 
+    '127.0.0.1',  
+]
 
 # resources 
 RESOURCES_DIR = os.path.join(BASE_DIR, 'resources')

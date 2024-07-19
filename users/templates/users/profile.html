@@ -248,26 +248,33 @@
                     </thead>
                     <tbody>
                         {% for submission in page_obj %}
-                        <tr>
-                            <td>{{ submission.id }}</td>
-                            <td>
-                                <a href="{% url 'problem_detail' submission.problem.id %}" class="text-blue-500 hover:underline">
-                                    {{ submission.problem.title }}
-                                </a>
-                            </td>
-                            <td>{{ submission.language.name }}</td>
-                            <td>{{ submission.status }}</td>
-                            <td>{{ submission.created_at }}</td>
-                            <td>
-                                <button 
-                                    class="view-code-btn text-blue-500 hover:underline border border-gray-300 rounded p-1"
-                                    data-code="{{ submission.code }}"
-                                >
-                                    View Code
-                                </button>
-                            </td>
-                        </tr>
+                            {% if submission.status %}
+                                <tr>
+                                    <td>{{ submission.id }}</td>
+                                    <td>
+                                        {% if submission.problem.id %}
+                                            <a href="{% url 'problem_detail' submission.problem.id %}" class="text-blue-500 hover:underline">
+                                                {{ submission.problem.title }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-red-500">Invalid Problem ID</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ submission.language.name }}</td>
+                                    <td>{{ submission.status }}</td>
+                                    <td>{{ submission.created_at }}</td>
+                                    <td>
+                                        <button 
+                                            class="view-code-btn text-blue-500 hover:underline border border-gray-300 rounded p-1"
+                                            data-code="{{ submission.code }}"
+                                        >
+                                            View Code
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endif %}
                         {% endfor %}
+
                     </tbody>
                 </table>
 

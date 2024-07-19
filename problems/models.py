@@ -15,7 +15,6 @@ class Problem(models.Model):
     example_input = models.TextField()
     example_output = models.TextField()
     difficulty = models.CharField(max_length=50, default='Medium')  # Default value for difficulty
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  # Default to the first user (adjust as needed)
 
     def __str__(self):
         return self.title
@@ -35,7 +34,6 @@ class TemporaryProblem(models.Model):
         return self.title
 
 class TemporaryTestCase(models.Model):
-    # problem = models.ForeignKey(Problem, related_name='problem_test_cases', on_delete=models.CASCADE, null=True, blank=True)
     temporary_problem = models.ForeignKey(TemporaryProblem, related_name='temporary_test_cases', on_delete=models.CASCADE, null=True, blank=True)
     input_data = models.TextField()
 
